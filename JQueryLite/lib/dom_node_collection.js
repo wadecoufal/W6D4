@@ -49,10 +49,62 @@ class DOMNodeCollection {
     });
   }
   
-  removeClass () {
+  removeClass (className) {
+    this.htmlArr.forEach( (el) => {
+      el.className = el.className.replace(`${className}`,"");
+    });
     
   }
   
+  children () {
+    let result = [];
+    this.htmlArr.forEach( (el) => {
+      const children = Array.from(el.children);
+      result = result.concat(children);
+    });
+    return new DOMNodeCollection(result);
+  }
+  
+  parent () {
+    let result = [];
+    this.htmlArr.forEach( (el) => {
+      const parent = [el.parentNode];
+      if (!result.includes(parent[0])) {
+        result = result.concat(parent);
+      }
+    });
+    return new DOMNodeCollection(result);  
+  }
+  
+  find (selector) {
+    let result = [];
+    
+    this.htmlArr.forEach( (el) => {
+      result = result.concat(Array.from(el.querySelectorAll(selector)));
+    });
+    return result;
+  }
+  
+  remove () {
+    this.htmlArr.forEach( (el) => {
+      el.remove();
+    });
+    this.htmlArr = [];
+  }
+  
+  on (e,callback) {
+    this.htmlArr.forEach( (el) => {
+      el.addEventListener(e,callback);
+      el.callback = callback;
+    });
+  }
+  
+  off (e) {
+    this.htmlArr.forEach( (el) => {
+      el.removeEventListener(e, el.callback);
+      delete el.callback;
+    });
+  }
+  
 }
-
 module.exports = DOMNodeCollection;
